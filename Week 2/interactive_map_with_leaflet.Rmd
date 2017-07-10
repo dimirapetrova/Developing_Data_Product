@@ -1,0 +1,90 @@
+---
+title: "Interactive Map with Leaflet"
+author: "Dimira Petrova"
+date: "July 10, 2017"
+output: html_document
+---
+#Objective 
+This document presents how to use the package **leaflet.** 
+We also use the package **dplyr** (which main purpose is to pipeline different pieces of code) 
+in order to simplify the code and make it more readable. 
+Load in the packages. 
+```{r, echo=FALSE,message=FALSE,warning=FALSE}
+#install.packages('leaflet')
+library(leaflet)
+#install.packages('dplyr')
+library(dplyr)
+```
+
+#Simple Map
+Create Simple Map without any additional data required.
+```{r,echo=TRUE}
+simple_map = leaflet() %>% #initialize the working space
+  addTiles() %>%  #add the open-source tiles in order to have better visualization
+  setView(lng=42.6977, lat=23.3219, zoom = 6) %>% #pinpoint a location
+  #add marker with customized label,icon and it is static
+  addMarkers(lng=42.6977, lat=23.3219, label = 'Some Place'
+             ,labelOptions = labelOptions(noHide = T))
+simple_map 
+```
+Note: The **order is important.** A view can't be set unless there are no tiles which 
+is the same for the marker - unless we have set where to look at, no marker would be visible.
+
+#CSV Map
+Now we will use a dataset which can be found in the [resources](#Resources) section of the document.
+It consists of addresses in Connecticut. Let's imagine that it is about restaurants and that we want to 
+visuzlize them together with their ratings. 
+Load the data and have e look at the data. 
+```{r,echo = TRUE}
+data = read.csv("ctlist.csv", stringsAsFactors=FALSE)
+summary(data)
+#remove X since it is raw id
+data = data[,-1]
+
+
+```
+Add artificially create color-based tag (from green to red).
+```{r, echo =TRUE}
+set.seed(1234)
+data$color = sample(c("green","red","yellow"),509,replace=T)
+```
+
+For every different rating color paint the restaurant appropriately.  
+```{r, echo = TRUE}
+csv_map = 
+    leaflet(data) %>% #just feed the data to the leaflet function
+    addTiles('http://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png', 
+             attribution='Map by Dimira. Petrova| Coursera Data App Course') %>%
+    setView(-72.690940, 41.651426, zoom = 10) %>% #coordinates for Connecticut 
+    addCircles(~lng, ~lat, popup=data$address, color = data$color ) 
+  csv_map
+```
+Let's add legend for the ratings.
+```{r, echo=TRUE}
+  csv_map= 
+    csv_map %>% 
+    addLegend("bottomright", 
+              title = "Restaurant Rating",opacity = 1,
+              colors = c('green','red','yellow'),
+              labels = c("Yes!Yes!Yes!","Don't go there","OK"))
+  
+  csv_map
+```
+The last update that we will do on the map is to add imaginary hot termerature areas in red
+
+```{r, echo=TRUE}
+
+csv_map = csv_map %>%
+  addPolygons(~lng, ~lat,stroke = FALSE, fillColor = rainbow(3,alpha=NULL)) %>%
+  addLegend('topright', color = 'orange', opacity = 0.5, labels="Hot temperature",title = "Temperature")
+csv_map
+                     
+```
+
+#Resources
+* [Data Source](https://github.com/trendct/walkthroughs/tree/master/0615-leaflet-r)
+* [Tutorial Materials](https://trendct.org/2015/06/26/tutorial-how-to-put-dots-on-a-leaflet-map-with-r/)
+
+
+
+
