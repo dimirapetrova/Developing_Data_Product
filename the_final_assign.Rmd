@@ -1,0 +1,46 @@
+---
+title: "The Assignment"
+author: "Dimira Petrova"
+date: "July 11, 2017"
+output: html_document
+---
+
+
+## Get the dataset
+
+``` {r}
+
+london_data <- read.csv("london-restaurant.csv", header = TRUE)
+head(london_data) 
+```
+
+```{r}
+london_data$lat <- as.numeric(as.character(london_data$lat))
+london_data$lng <- as.numeric(as.character(london_data$lng))
+london_data$category <- as.factor(london_data$category)
+london_data$location <- as.factor(london_data$location)
+```
+
+```{r}
+library(leaflet)
+
+Names_rest <- c(london_data$name, london_data$details)
+
+# subset(london_data, select = c("lat","lng")) %>%
+#         leaflet() %>%
+#         addTiles() %>%
+#         addMarkers(clusterOptions = markerClusterOptions(), popup = Names_rest)
+
+        london_data %>%
+        leaflet() %>%
+        addTiles() %>%
+        addMarkers(clusterOptions = markerClusterOptions(), popup = london_data$name)
+ 
+ 
+#Names <- c(london_data$name,london_data$details)
+
+#london_lat_lng <- leaflet() %>%
+      #  addTiles() %>%
+      #  addMarkers(clusterOptions = markerClusterOptions(), popup = Names)
+#london_lat_lng
+```
