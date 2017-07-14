@@ -1,0 +1,8 @@
+Package: topten
+Type: Package
+Title: Building a Prediction Model from the top ten features
+Version: 1.0.143 
+Author: Dimira Petrova
+Maintainer: Dimira Petrova <dimira.plamenova.petrova@gmail.com>
+Description: Functions for building and predicting models from selecting the top 10 predictors in a dataset
+License: GPL-3
